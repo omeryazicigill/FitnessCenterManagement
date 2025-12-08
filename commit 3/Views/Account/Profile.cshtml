@@ -1,0 +1,132 @@
+@model FitnessCenterManagement.Models.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-person-circle me-2"></i>Profilim</h1>
+        <p class="mb-0 opacity-75">Kişisel bilgilerinizi görüntüleyin ve güncelleyin</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                        {
+                            <img src="@Model.ProfileImageUrl" class="rounded-circle" width="150" height="150" style="object-fit: cover;" alt="Profil">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                <i class="bi bi-person display-1 text-primary"></i>
+                            </div>
+                        }
+                    </div>
+                    <h4 class="fw-bold mb-1">@Model.FullName</h4>
+                    <p class="text-muted mb-3">@Model.Email</p>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span class="badge bg-danger">Yönetici</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-primary">Üye</span>
+                    }
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-start">
+                        <p class="mb-2">
+                            <i class="bi bi-calendar-event me-2 text-muted"></i>
+                            <strong>Kayıt Tarihi:</strong> @Model.CreatedAt.ToString("dd MMMM yyyy")
+                        </p>
+                        @if (Model.PhoneNumber != null)
+                        {
+                            <p class="mb-2">
+                                <i class="bi bi-telephone me-2 text-muted"></i>
+                                <strong>Telefon:</strong> @Model.PhoneNumber
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Bilgileri Düzenle</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Profile" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Height" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Height" class="form-control" type="number" />
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                <span asp-validation-for="Height" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Weight" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Weight" class="form-control" type="number" step="0.1" />
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                                <span asp-validation-for="Weight" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-controller="Home" asp-action="Dashboard" class="btn btn-outline-secondary">İptal</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+

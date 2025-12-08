@@ -1,0 +1,167 @@
+@model FitnessCenterManagement.ViewModels.AppointmentViewModel
+@{
+    ViewData["Title"] = "Randevu Oluştur";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-calendar-plus me-2"></i>Randevu Oluştur</h1>
+        <p class="mb-0 opacity-75">Antrenör ve hizmet seçerek randevu oluşturun</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" id="appointmentForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="TrainerId" class="form-label fw-bold">Antrenör Seçin</label>
+                            <select asp-for="TrainerId" class="form-select form-select-lg" id="trainerSelect">
+                                <option value="">-- Antrenör Seçin --</option>
+                                @if (Model.Trainers != null)
+                                {
+                                    @foreach (var trainer in Model.Trainers)
+                                    {
+                                        <option value="@trainer.Id">@trainer.FullName - @trainer.Specializations</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="TrainerId" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="ServiceId" class="form-label fw-bold">Hizmet Seçin</label>
+                            <select asp-for="ServiceId" class="form-select form-select-lg" id="serviceSelect">
+                                <option value="">-- Önce Antrenör Seçin --</option>
+                            </select>
+                            <span asp-validation-for="ServiceId" class="text-danger small"></span>
+                            <div id="serviceInfo" class="mt-2 p-3 bg-light rounded" style="display: none;">
+                                <div class="d-flex justify-content-between">
+                                    <span>Süre: <strong id="serviceDuration"></strong> dakika</span>
+                                    <span>Ücret: <strong id="servicePrice" class="text-primary"></strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="AppointmentDate" class="form-label fw-bold">Tarih Seçin</label>
+                                <input asp-for="AppointmentDate" type="date" class="form-control form-control-lg" id="dateSelect" 
+                                       min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="StartTime" class="form-label fw-bold">Saat Seçin</label>
+                                <select asp-for="StartTime" class="form-select form-select-lg" id="timeSelect">
+                                    <option value="">-- Önce Tarih Seçin --</option>
+                                </select>
+                                <span asp-validation-for="StartTime" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label fw-bold">Notlar (Opsiyonel)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" 
+                                      placeholder="Antrenöre iletmek istediğiniz notlar..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-1"></i>Geri
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-lg me-1"></i>Randevu Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        $(document).ready(function() {
+            var servicesData = [];
+            
+            // When trainer changes, load their services
+            $('#trainerSelect').change(function() {
+                var trainerId = $(this).val();
+                var serviceSelect = $('#serviceSelect');
+                var serviceInfo = $('#serviceInfo');
+                
+                serviceSelect.html('<option value="">-- Yükleniyor... --</option>');
+                serviceInfo.hide();
+                
+                if (trainerId) {
+                    $.get('/Appointment/GetServicesByTrainer', { trainerId: trainerId }, function(data) {
+                        servicesData = data;
+                        serviceSelect.html('<option value="">-- Hizmet Seçin --</option>');
+                        $.each(data, function(i, service) {
+                            serviceSelect.append('<option value="' + service.id + '">' + service.name + ' - ' + service.price + ' ₺</option>');
+                        });
+                    });
+                } else {
+                    serviceSelect.html('<option value="">-- Önce Antrenör Seçin --</option>');
+                }
+            });
+            
+            // When service changes, show info
+            $('#serviceSelect').change(function() {
+                var serviceId = parseInt($(this).val());
+                var serviceInfo = $('#serviceInfo');
+                
+                if (serviceId) {
+                    var service = servicesData.find(s => s.id === serviceId);
+                    if (service) {
+                        $('#serviceDuration').text(service.durationMinutes);
+                        $('#servicePrice').text(service.price + ' ₺');
+                        serviceInfo.show();
+                    }
+                } else {
+                    serviceInfo.hide();
+                }
+            });
+            
+            // When date changes, load available times
+            $('#dateSelect').change(function() {
+                var trainerId = $('#trainerSelect').val();
+                var date = $(this).val();
+                var timeSelect = $('#timeSelect');
+                
+                timeSelect.html('<option value="">-- Yükleniyor... --</option>');
+                
+                if (trainerId && date) {
+                    $.get('/Appointment/GetAvailableTimes', { trainerId: trainerId, date: date }, function(response) {
+                        if (response.success) {
+                            timeSelect.html('<option value="">-- Saat Seçin --</option>');
+                            $.each(response.times, function(i, time) {
+                                timeSelect.append('<option value="' + time + '">' + time + '</option>');
+                            });
+                            
+                            if (response.times.length === 0) {
+                                timeSelect.html('<option value="">-- Müsait saat yok --</option>');
+                            }
+                        } else {
+                            timeSelect.html('<option value="">-- ' + response.message + ' --</option>');
+                        }
+                    });
+                } else {
+                    timeSelect.html('<option value="">-- Önce Antrenör ve Tarih Seçin --</option>');
+                }
+            });
+        });
+    </script>
+}
+
+
+
+

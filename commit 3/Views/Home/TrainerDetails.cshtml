@@ -1,0 +1,165 @@
+@model FitnessCenterManagement.Models.Entities.Trainer
+@{
+    ViewData["Title"] = Model.FullName;
+}
+
+<div class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-white-50">Ana Sayfa</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Trainers", "Home")" class="text-white-50">Antrenörler</a></li>
+                <li class="breadcrumb-item active text-white">@Model.FullName</li>
+            </ol>
+        </nav>
+        <h1><i class="bi bi-person-badge me-2"></i>@Model.FullName</h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" class="rounded-circle" width="200" height="200" style="object-fit: cover;" alt="@Model.FullName">
+                        }
+                        else
+                        {
+                            <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mx-auto" style="width: 200px; height: 200px;">
+                                <i class="bi bi-person display-1 text-primary"></i>
+                            </div>
+                        }
+                    </div>
+                    <h4 class="fw-bold mb-1">@Model.FullName</h4>
+                    <p class="text-primary mb-3">@Model.Specializations</p>
+                    
+                    <div class="d-flex justify-content-center gap-3 mb-3">
+                        <div class="text-center">
+                            <h5 class="fw-bold text-primary mb-0">@Model.ExperienceYears</h5>
+                            <small class="text-muted">Yıl Deneyim</small>
+                        </div>
+                        <div class="vr"></div>
+                        <div class="text-center">
+                            <h5 class="fw-bold text-primary mb-0">@Model.TrainerServices.Count</h5>
+                            <small class="text-muted">Hizmet</small>
+                        </div>
+                    </div>
+                    
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary w-100">
+                            <i class="bi bi-calendar-plus me-1"></i>Randevu Al
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Randevu İçin Giriş Yap
+                        </a>
+                    }
+                </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>İletişim</h6>
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <p class="mb-2">
+                            <i class="bi bi-envelope me-2 text-muted"></i>@Model.Email
+                        </p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Phone))
+                    {
+                        <p class="mb-2">
+                            <i class="bi bi-telephone me-2 text-muted"></i>@Model.Phone
+                        </p>
+                    }
+                    @if (Model.Gym != null)
+                    {
+                        <p class="mb-0">
+                            <i class="bi bi-building me-2 text-muted"></i>@Model.Gym.Name
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <!-- Biography -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-person-vcard me-2"></i>Hakkında</h5>
+                    <p class="text-muted mb-0">@Model.Biography</p>
+                </div>
+            </div>
+            
+            <!-- Services -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-grid me-2"></i>Verdiği Hizmetler</h5>
+                    <div class="row g-3">
+                        @foreach (var ts in Model.TrainerServices)
+                        {
+                            if (ts.Service != null)
+                            {
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="fw-bold mb-1">@ts.Service.Name</h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">@ts.Service.DurationMinutes dk</small>
+                                            <span class="fw-bold text-primary">@ts.Service.Price.ToString("N0") ₺</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Availability -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-calendar-week me-2"></i>Müsaitlik Saatleri</h5>
+                    @if (Model.Availabilities.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Gün</th>
+                                        <th>Başlangıç</th>
+                                        <th>Bitiş</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var availability in Model.Availabilities.Where(a => a.IsActive).OrderBy(a => a.DayOfWeek))
+                                    {
+                                        <tr>
+                                            <td><strong>@availability.DayName</strong></td>
+                                            <td>@availability.StartTime.ToString(@"hh\:mm")</td>
+                                            <td>@availability.EndTime.ToString(@"hh\:mm")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Müsaitlik bilgisi henüz eklenmemiş.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
