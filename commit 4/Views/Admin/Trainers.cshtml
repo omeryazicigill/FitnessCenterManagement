@@ -1,0 +1,124 @@
+@model List<FitnessCenterManagement.Models.Entities.Trainer>
+@{
+    ViewData["Title"] = "Antrenör Yönetimi";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-people-fill me-2"></i>Antrenör Yönetimi</h1>
+                <p class="mb-0 opacity-75">Antrenörleri görüntüleyin ve yönetin</p>
+            </div>
+            <a asp-action="CreateTrainer" class="btn btn-light">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Antrenör
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Antrenör</th>
+                            <th>E-posta</th>
+                            <th>Telefon</th>
+                            <th>Uzmanlık</th>
+                            <th>Deneyim</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var trainer in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(trainer.ImageUrl))
+                                        {
+                                            <img src="@trainer.ImageUrl" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                                <i class="bi bi-person text-primary"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <strong>@trainer.FullName</strong>
+                                            <br><small class="text-muted">@trainer.Gym?.Name</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@trainer.Email</td>
+                                <td>@trainer.Phone</td>
+                                <td><span class="badge bg-primary bg-opacity-10 text-primary">@trainer.Specializations</span></td>
+                                <td>@trainer.ExperienceYears yıl</td>
+                                <td>
+                                    @if (trainer.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="TrainerAvailability" asp-route-id="@trainer.Id" class="btn btn-outline-info" title="Müsaitlik">
+                                            <i class="bi bi-clock"></i>
+                                        </a>
+                                        <a asp-action="EditTrainer" asp-route-id="@trainer.Id" class="btn btn-outline-primary" title="Düzenle">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal@(trainer.Id)" title="Sil">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal@(trainer.Id)" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Silme Onayı</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <strong>@trainer.FullName</strong> adlı antrenörü silmek istediğinize emin misiniz?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                                    <form asp-action="DeleteTrainer" method="post" class="d-inline">
+                                                        <input type="hidden" name="id" value="@trainer.Id" />
+                                                        <button type="submit" class="btn btn-danger">Sil</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+
+
+
