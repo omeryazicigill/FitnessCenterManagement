@@ -1,0 +1,124 @@
+@model List<FitnessCenterManagement.ViewModels.AppointmentListViewModel>
+@{
+    ViewData["Title"] = "Randevularım";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-calendar-check me-2"></i>Randevularım</h1>
+                <p class="mb-0 opacity-75">Randevularınızı görüntüleyin ve yönetin</p>
+            </div>
+            <a asp-action="Create" class="btn btn-light">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Randevu
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
+                <h4>Henüz randevunuz bulunmuyor</h4>
+                <p class="text-muted">İlk randevunuzu oluşturmak için aşağıdaki butona tıklayın.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>Randevu Oluştur
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        var upcomingAppointments = Model.Where(a => a.AppointmentDate.Date >= DateTime.Today).ToList();
+        var pastAppointments = Model.Where(a => a.AppointmentDate.Date < DateTime.Today).ToList();
+
+        if (upcomingAppointments.Any())
+        {
+            <h5 class="mb-3"><i class="bi bi-calendar-event me-2 text-primary"></i>Yaklaşan Randevular</h5>
+            <div class="row g-4 mb-5">
+                @foreach (var appointment in upcomingAppointments)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <span class="badge bg-@appointment.StatusColor">@appointment.StatusName</span>
+                                    <span class="text-muted small">@appointment.AppointmentDate.ToString("dd MMM yyyy")</span>
+                                </div>
+                                
+                                <h5 class="fw-bold mb-2">@appointment.ServiceName</h5>
+                                <p class="text-muted mb-3">
+                                    <i class="bi bi-person me-1"></i>@appointment.TrainerName
+                                </p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>
+                                        <i class="bi bi-clock me-1"></i>
+                                        @appointment.StartTime.ToString(@"hh\:mm") - @appointment.EndTime.ToString(@"hh\:mm")
+                                    </span>
+                                    <span class="fw-bold text-primary">@appointment.Price.ToString("N0") ₺</span>
+                                </div>
+                                
+                                @if (appointment.Status == FitnessCenterManagement.Models.Entities.AppointmentStatus.Pending || 
+                                     appointment.Status == FitnessCenterManagement.Models.Entities.AppointmentStatus.Approved)
+                                {
+                                    <form asp-action="Cancel" method="post">
+                                        <input type="hidden" name="id" value="@appointment.Id" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100" 
+                                                onclick="return confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?')">
+                                            <i class="bi bi-x-lg me-1"></i>İptal Et
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        if (pastAppointments.Any())
+        {
+            <h5 class="mb-3"><i class="bi bi-clock-history me-2 text-secondary"></i>Geçmiş Randevular</h5>
+            <div class="row g-4">
+                @foreach (var appointment in pastAppointments)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100" style="opacity: 0.75;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <span class="badge bg-@appointment.StatusColor me-1">@appointment.StatusName</span>
+                                        <span class="badge bg-secondary">Geçmiş</span>
+                                    </div>
+                                    <span class="text-muted small">@appointment.AppointmentDate.ToString("dd MMM yyyy")</span>
+                                </div>
+                                
+                                <h5 class="fw-bold mb-2">@appointment.ServiceName</h5>
+                                <p class="text-muted mb-3">
+                                    <i class="bi bi-person me-1"></i>@appointment.TrainerName
+                                </p>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <i class="bi bi-clock me-1"></i>
+                                        @appointment.StartTime.ToString(@"hh\:mm") - @appointment.EndTime.ToString(@"hh\:mm")
+                                    </span>
+                                    <span class="fw-bold text-muted">@appointment.Price.ToString("N0") ₺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+
+
+

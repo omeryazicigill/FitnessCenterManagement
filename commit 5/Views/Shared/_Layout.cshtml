@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FitLife Spor Merkezi</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #1a1a2e;
+            --accent-color: #16213e;
+            --success-color: #00c853;
+            --gradient-start: #ff6b35;
+            --gradient-end: #f7931e;
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #fff !important;
+        }
+        
+        .navbar-brand i {
+            color: var(--primary-color);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+            background: linear-gradient(135deg, var(--gradient-end), var(--gradient-start));
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            border-radius: 50px;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        footer {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+            color: #fff;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        footer a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        footer a:hover {
+            color: var(--primary-color);
+        }
+        
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Turuncu arka plan üzerindeki text-primary'yi siyah yap */
+        .bg-primary.bg-opacity-10 .text-primary,
+        .bg-primary.bg-opacity-10.text-primary,
+        .bg-primary.bg-opacity-25 .text-primary,
+        .bg-primary.bg-opacity-25.text-primary {
+            color: #000 !important;
+        }
+        
+        /* Turuncu (primary) arka planlı badge'lerde metin rengi siyah */
+        .badge.bg-primary.bg-opacity-10,
+        .badge.bg-primary.bg-opacity-25 {
+            color: #000 !important;
+            background-color: rgba(255, 107, 53, 0.15) !important;
+        }
+        
+        /* Rounded circle içindeki ikonlar için */
+        .rounded-circle.bg-primary.bg-opacity-10 .text-primary,
+        .rounded-circle.bg-primary.bg-opacity-10 i.text-primary {
+            color: #000 !important;
+        }
+        
+        /* Sadece tam opaklıktaki bg-primary gradient kullanacak */
+        .bg-primary:not(.bg-opacity-10):not(.bg-opacity-25):not(.bg-opacity-50):not(.bg-opacity-75) {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 10px;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 107, 53, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.15);
+        }
+        
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .badge {
+            padding: 0.5em 1em;
+            border-radius: 50px;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            color: #fff;
+        }
+        
+        .page-header h1 {
+            font-weight: 700;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-lightning-charge-fill me-2"></i>FitLife
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <!-- Admin Menüsü -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Index">
+                                    <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Members">
+                                    <i class="bi bi-people-fill me-1"></i> Üyeler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Trainers">
+                                    <i class="bi bi-person-badge-fill me-1"></i> Antrenörler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Services">
+                                    <i class="bi bi-grid-fill me-1"></i> Hizmetler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Appointments">
+                                    <i class="bi bi-calendar-check-fill me-1"></i> Randevular
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Gyms">
+                                    <i class="bi bi-building me-1"></i> Spor Salonları
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Üye / Ziyaretçi Menüsü -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-house-fill me-1"></i> Ana Sayfa
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Services">
+                                    <i class="bi bi-grid-fill me-1"></i> Hizmetler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Trainers">
+                                    <i class="bi bi-people-fill me-1"></i> Antrenörler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="About">
+                                    <i class="bi bi-info-circle me-1"></i> Hakkımızda
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Contact">
+                                    <i class="bi bi-envelope me-1"></i> İletişim
+                                </a>
+                            </li>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Appointment" asp-action="Index">
+                                        <i class="bi bi-calendar-check-fill me-1"></i> Randevularım
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AI" asp-action="Recommendation">
+                                        <i class="bi bi-robot me-1"></i> AI Öneri
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle me-1"></i> @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                                <i class="bi bi-speedometer2 me-2"></i>Yönetim Paneli
+                                            </a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Home" asp-action="Dashboard">
+                                                <i class="bi bi-speedometer me-2"></i>Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                                <i class="bi bi-person me-2"></i>Profilim
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Çıkış Yap
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Giriş Yap
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ms-2" asp-controller="Account" asp-action="Register">
+                                    <i class="bi bi-person-plus me-1"></i> Üye Ol
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>FitLife</h5>
+                    <p class="text-white-50">Modern ekipmanlar ve profesyonel eğitmenler ile spor deneyiminizi en üst seviyeye çıkarıyoruz.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="mb-3">Hızlı Linkler</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
+                        <li class="mb-2"><a asp-controller="Home" asp-action="Services">Hizmetler</a></li>
+                        <li class="mb-2"><a asp-controller="Home" asp-action="Trainers">Antrenörler</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3">İletişim</h6>
+                    <ul class="list-unstyled text-white-50">
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>Sakarya Üniversitesi</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2"></i>0264 123 45 67</li>
+                        <li class="mb-2"><i class="bi bi-envelope me-2"></i>info@fitlife.com</li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3">Sosyal Medya</h6>
+                    <a href="#" class="me-3"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" class="me-3"><i class="bi bi-instagram fs-5"></i></a>
+                    <a href="#" class="me-3"><i class="bi bi-twitter fs-5"></i></a>
+                    <a href="#"><i class="bi bi-youtube fs-5"></i></a>
+                </div>
+            </div>
+            <hr class="my-4 bg-secondary">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-white-50">&copy; 2024 FitLife. Tüm hakları saklıdır.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-white-50">Ömer Yazıcıgil - b231210383</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

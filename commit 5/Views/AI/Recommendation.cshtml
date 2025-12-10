@@ -1,0 +1,145 @@
+@model FitnessCenterManagement.ViewModels.AIRecommendationViewModel
+@{
+    ViewData["Title"] = "AI Öneri Sistemi";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-robot me-2"></i>AI Öneri Sistemi</h1>
+        <p class="mb-0 opacity-75">Yapay zeka destekli kişisel egzersiz ve beslenme önerileri</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-person-vcard me-2"></i>Bilgilerinizi Girin</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="recommendationForm">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label asp-for="Age" class="form-label"></label>
+                                <input asp-for="Age" class="form-control" type="number" placeholder="25" />
+                                <span asp-validation-for="Age" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label asp-for="Height" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="Height" class="form-control" type="number" placeholder="175" />
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                                <span asp-validation-for="Height" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Weight" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="Weight" class="form-control" type="number" step="0.1" placeholder="70" />
+                                <span class="input-group-text">kg</span>
+                            </div>
+                            <span asp-validation-for="Weight" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="BodyType" class="form-label"></label>
+                            <select asp-for="BodyType" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Ektomorf (İnce yapılı)">Ektomorf (İnce yapılı)</option>
+                                <option value="Mezomorf (Atletik yapılı)">Mezomorf (Atletik yapılı)</option>
+                                <option value="Endomorf (Geniş yapılı)">Endomorf (Geniş yapılı)</option>
+                            </select>
+                            <span asp-validation-for="BodyType" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Goal" class="form-label"></label>
+                            <select asp-for="Goal" class="form-select">
+                                <option value="">Seçiniz</option>
+                                <option value="Kilo vermek">Kilo vermek</option>
+                                <option value="Kas geliştirmek">Kas geliştirmek</option>
+                                <option value="Fit kalmak">Fit kalmak</option>
+                                <option value="Dayanıklılık artırmak">Dayanıklılık artırmak</option>
+                                <option value="Esneklik kazanmak">Esneklik kazanmak</option>
+                            </select>
+                            <span asp-validation-for="Goal" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" formaction="@Url.Action("GetExerciseRecommendation")" formmethod="post" class="btn btn-primary">
+                                <i class="bi bi-activity me-2"></i>Egzersiz Önerisi Al
+                            </button>
+                            <button type="submit" formaction="@Url.Action("GetDietPlan")" formmethod="post" class="btn btn-success">
+                                <i class="bi bi-egg-fried me-2"></i>Beslenme Planı Al
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <a asp-action="ImageAnalysis" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-camera me-2"></i>Fotoğraf ile Analiz
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-7">
+            @if (!string.IsNullOrEmpty(Model.ExerciseRecommendation))
+            {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="mb-0"><i class="bi bi-activity me-2"></i>Egzersiz Programınız</h5>
+                    </div>
+                    <div class="card-body">
+                        @Html.Raw(Model.ExerciseRecommendation)
+                    </div>
+                </div>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.DietPlan))
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-success text-white py-3">
+                        <h5 class="mb-0"><i class="bi bi-egg-fried me-2"></i>Beslenme Planınız</h5>
+                    </div>
+                    <div class="card-body">
+                        @Html.Raw(Model.DietPlan)
+                    </div>
+                </div>
+            }
+            
+            @if (string.IsNullOrEmpty(Model.ExerciseRecommendation) && string.IsNullOrEmpty(Model.DietPlan))
+            {
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center py-5">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-4 mb-4">
+                            <i class="bi bi-robot display-1 text-primary"></i>
+                        </div>
+                        <h4 class="mb-2">AI Öneri Sistemi</h4>
+                        <p class="text-muted text-center mb-0">
+                            Bilgilerinizi girerek yapay zeka destekli<br>
+                            egzersiz ve beslenme önerileri alın.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+

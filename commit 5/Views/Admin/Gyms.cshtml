@@ -1,0 +1,84 @@
+@model IEnumerable<FitnessCenterManagement.Models.Entities.Gym>
+@{
+    ViewData["Title"] = "Spor Salonları";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-building me-2"></i>Spor Salonları</h1>
+                <p class="mb-0 opacity-75">Tüm spor salonlarını yönetin</p>
+            </div>
+            <a asp-action="CreateGym" class="btn btn-light">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Salon Ekle
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Salon Adı</th>
+                            <th>Adres</th>
+                            <th>Telefon</th>
+                            <th>Çalışma Saatleri</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var gym in Model)
+                        {
+                            <tr>
+                                <td>@gym.Id</td>
+                                <td>
+                                    <strong>@gym.Name</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@gym.Address</small>
+                                </td>
+                                <td>@gym.Phone</td>
+                                <td>
+                                    <span class="badge bg-light text-dark">
+                                        @gym.OpeningTime.ToString(@"hh\:mm") - @gym.ClosingTime.ToString(@"hh\:mm")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (gym.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="EditGym" asp-route-id="@gym.Id" class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="DeleteGym" asp-route-id="@gym.Id" method="post" 
+                                              onsubmit="return confirm('Bu spor salonunu silmek istediğinize emin misiniz?');">
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

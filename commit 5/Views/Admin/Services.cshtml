@@ -1,0 +1,107 @@
+@model List<FitnessCenterManagement.Models.Entities.Service>
+@{
+    ViewData["Title"] = "Hizmet Yönetimi";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-grid-fill me-2"></i>Hizmet Yönetimi</h1>
+                <p class="mb-0 opacity-75">Hizmetleri görüntüleyin ve yönetin</p>
+            </div>
+            <a asp-action="CreateService" class="btn btn-light">
+                <i class="bi bi-plus-lg me-1"></i>Yeni Hizmet
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Hizmet</th>
+                            <th>Kategori</th>
+                            <th>Süre</th>
+                            <th>Ücret</th>
+                            <th>Salon</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var service in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@service.Name</strong>
+                                    <br><small class="text-muted">@service.Description?.Substring(0, Math.Min(50, service.Description?.Length ?? 0))...</small>
+                                </td>
+                                <td><span class="badge bg-primary bg-opacity-10 text-primary">@service.Category</span></td>
+                                <td>@service.DurationMinutes dk</td>
+                                <td><strong>@service.Price.ToString("N0") ₺</strong></td>
+                                <td>@service.Gym?.Name</td>
+                                <td>
+                                    @if (service.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="EditService" asp-route-id="@service.Id" class="btn btn-outline-primary" title="Düzenle">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal@(service.Id)" title="Sil">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal@(service.Id)" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Silme Onayı</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <strong>@service.Name</strong> hizmetini silmek istediğinize emin misiniz?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                                    <form asp-action="DeleteService" method="post" class="d-inline">
+                                                        <input type="hidden" name="id" value="@service.Id" />
+                                                        <button type="submit" class="btn btn-danger">Sil</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Geri Dön
+        </a>
+    </div>
+</div>
+
+
+
+
