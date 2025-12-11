@@ -1,0 +1,284 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+    var gym = ViewBag.Gym as FitnessCenterManagement.Models.Entities.Gym;
+    var services = ViewBag.Services as List<FitnessCenterManagement.Models.Entities.Service>;
+    var trainers = ViewBag.Trainers as List<FitnessCenterManagement.Models.Entities.Trainer>;
+}
+
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 90vh;">
+    <div class="position-absolute w-100 h-100" style="background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920') center/cover; opacity: 0.2;"></div>
+    <div class="container position-relative" style="padding-top: 120px;">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <span class="badge bg-warning text-dark px-3 py-2 mb-3 rounded-pill">
+                    <i class="bi bi-lightning-charge-fill me-1"></i> #1 Spor Merkezi
+                </span>
+                <h1 class="display-3 fw-bold text-white mb-4">
+                    Sağlıklı Bir Yaşam İçin<br>
+                    <span style="color: #ff6b35;">Güçlü Ol!</span>
+                </h1>
+                <p class="lead text-white-50 mb-4">
+                    Profesyonel antrenörler, modern ekipmanlar ve kişiselleştirilmiş programlarla 
+                    hedeflerinize ulaşın. Yapay zeka destekli egzersiz ve diyet önerileri ile 
+                    farkı yaşayın!
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-calendar-plus me-2"></i>Randevu Al
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-person-plus me-2"></i>Hemen Başla
+                        </a>
+                    }
+                    <a asp-controller="Home" asp-action="Services" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-grid me-2"></i>Hizmetlerimiz
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="row mt-5 pt-4">
+                    <div class="col-4">
+                        <h2 class="fw-bold text-white mb-0">500+</h2>
+                        <p class="text-white-50 mb-0">Aktif Üye</p>
+                    </div>
+                    <div class="col-4">
+                        <h2 class="fw-bold text-white mb-0">15+</h2>
+                        <p class="text-white-50 mb-0">Uzman Antrenör</p>
+                    </div>
+                    <div class="col-4">
+                        <h2 class="fw-bold text-white mb-0">7/24</h2>
+                        <p class="text-white-50 mb-0">Hizmet</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="position-relative">
+                    <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600" 
+                         class="img-fluid rounded-4 shadow-lg" alt="Fitness" style="transform: rotate(3deg);">
+                    <div class="position-absolute bottom-0 start-0 translate-middle-y bg-white p-4 rounded-4 shadow-lg" style="margin-left: -30px;">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-graph-up-arrow text-success fs-4"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 fw-bold">AI Destekli</h5>
+                                <small class="text-muted">Kişisel Program</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wave -->
+    <div class="position-absolute bottom-0 w-100">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8f9fa"/>
+        </svg>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">HİZMETLERİMİZ</span>
+            <h2 class="display-5 fw-bold">Sunduğumuz Hizmetler</h2>
+            <p class="lead text-muted">Profesyonel ekibimizle size en uygun programı oluşturuyoruz</p>
+        </div>
+        
+        <div class="row g-4">
+            @if (services != null)
+            {
+                @foreach (var service in services)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex p-3 mb-3">
+                                    @{
+                                        var icon = service.Category switch
+                                        {
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.Fitness => "bi-activity",
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.Yoga => "bi-peace",
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.Pilates => "bi-person-arms-up",
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.Cardio => "bi-heart-pulse",
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.PersonalTraining => "bi-person-workspace",
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.CrossFit => "bi-lightning",
+                                            FitnessCenterManagement.Models.Entities.ServiceCategory.Boxing => "bi-hand-index-thumb",
+                                            _ => "bi-star"
+                                        };
+                                    }
+                                    <i class="bi @icon fs-4 text-primary"></i>
+                                </div>
+                                <h5 class="fw-bold">@service.Name</h5>
+                                <p class="text-muted mb-3">@service.Description</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="bi bi-clock me-1"></i>@service.DurationMinutes dk
+                                    </span>
+                                    <span class="fw-bold text-primary fs-5">@service.Price.ToString("N0") ₺</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        
+        <div class="text-center mt-5">
+            <a asp-controller="Home" asp-action="Services" class="btn btn-outline-primary btn-lg px-5">
+                Tüm Hizmetleri Gör <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- AI Feature Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-3">
+                    <i class="bi bi-robot me-1"></i> YENİ ÖZELLİK
+                </span>
+                <h2 class="display-5 fw-bold text-white mb-4">
+                    Yapay Zeka ile<br>Kişisel Program
+                </h2>
+                <p class="lead text-white-50 mb-4">
+                    Boy, kilo ve hedeflerinize göre yapay zeka destekli egzersiz ve beslenme 
+                    programları oluşturun. Fotoğraf yükleyerek vücut analizinizi yaptırın!
+                </p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-3 text-white">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        Kişiselleştirilmiş egzersiz programı
+                    </li>
+                    <li class="mb-3 text-white">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        Beslenme ve diyet önerileri
+                    </li>
+                    <li class="mb-3 text-white">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        Görsel vücut analizi
+                    </li>
+                </ul>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-controller="AI" asp-action="Recommendation" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-magic me-2"></i>AI Önerisi Al
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-person-plus me-2"></i>Üye Ol ve Dene
+                    </a>
+                }
+            </div>
+            <div class="col-lg-6">
+                <div class="card bg-white border-0 shadow-lg rounded-4 p-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4"><i class="bi bi-cpu text-primary me-2"></i>AI Öneri Sistemi</h5>
+                        <div class="mb-3 p-3 bg-light rounded-3">
+                            <small class="text-muted d-block mb-1">Vücut Tipi</small>
+                            <span class="fw-medium">Mezomorf</span>
+                        </div>
+                        <div class="mb-3 p-3 bg-light rounded-3">
+                            <small class="text-muted d-block mb-1">Önerilen Program</small>
+                            <span class="fw-medium">Kas Geliştirme + Kardiyo</span>
+                        </div>
+                        <div class="p-3 bg-success bg-opacity-10 rounded-3">
+                            <small class="text-success d-block mb-1"><i class="bi bi-lightning-charge me-1"></i>AI Önerisi</small>
+                            <span class="fw-medium text-success">Haftada 4 gün ağırlık, 2 gün kardiyo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trainers Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">EKİBİMİZ</span>
+            <h2 class="display-5 fw-bold">Uzman Antrenörlerimiz</h2>
+            <p class="lead text-muted">Deneyimli ve sertifikalı antrenörlerimizle tanışın</p>
+        </div>
+        
+        <div class="row g-4">
+            @if (trainers != null)
+            {
+                @foreach (var trainer in trainers)
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow-sm text-center">
+                            <div class="card-body p-4">
+                                <div class="mb-3">
+                                    @if (!string.IsNullOrEmpty(trainer.ImageUrl))
+                                    {
+                                        <img src="@trainer.ImageUrl" class="rounded-circle" width="120" height="120" style="object-fit: cover;" alt="@trainer.FullName">
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                            <i class="bi bi-person fs-1 text-primary"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <h5 class="fw-bold mb-1">@trainer.FullName</h5>
+                                <p class="text-primary small mb-2">@trainer.Specializations</p>
+                                <p class="text-muted small mb-3">
+                                    <i class="bi bi-award me-1"></i>@trainer.ExperienceYears yıl deneyim
+                                </p>
+                                <a asp-controller="Home" asp-action="TrainerDetails" asp-route-id="@trainer.Id" 
+                                   class="btn btn-sm btn-outline-primary rounded-pill px-4">
+                                    Profili Gör
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        
+        <div class="text-center mt-5">
+            <a asp-controller="Home" asp-action="Trainers" class="btn btn-outline-primary btn-lg px-5">
+                Tüm Antrenörler <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);">
+            <div class="card-body p-5 text-center text-white">
+                <h2 class="display-6 fw-bold mb-3">Hemen Başlayın!</h2>
+                <p class="lead mb-4 opacity-75">İlk randevunuza özel %20 indirim fırsatını kaçırmayın.</p>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-controller="Appointment" asp-action="Create" class="btn btn-light btn-lg px-5 fw-bold">
+                        <i class="bi bi-calendar-plus me-2"></i>Randevu Oluştur
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-5 fw-bold">
+                        <i class="bi bi-person-plus me-2"></i>Ücretsiz Üye Ol
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</section>
