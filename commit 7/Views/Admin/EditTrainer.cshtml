@@ -1,0 +1,146 @@
+@model FitnessCenterManagement.Models.Entities.Trainer
+@{
+    ViewData["Title"] = "Antrenör Düzenle";
+    var gyms = ViewBag.Gyms as List<FitnessCenterManagement.Models.Entities.Gym>;
+    var services = ViewBag.Services as List<FitnessCenterManagement.Models.Entities.Service>;
+    var selectedServices = ViewBag.SelectedServices as List<int> ?? new List<int>();
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-person-badge me-2"></i>Antrenör Düzenle</h1>
+        <p class="mb-0 opacity-75">@Model.FullName antrenörünü düzenliyorsunuz</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="EditTrainer" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Biography" class="form-label"></label>
+                            <textarea asp-for="Biography" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Biography" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Specializations" class="form-label"></label>
+                                <input asp-for="Specializations" class="form-control" />
+                                <span asp-validation-for="Specializations" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExperienceYears" class="form-label"></label>
+                                <div class="input-group">
+                                    <input asp-for="ExperienceYears" class="form-control" type="number" min="0" max="50" />
+                                    <span class="input-group-text">yıl</span>
+                                </div>
+                                <span asp-validation-for="ExperienceYears" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GymId" class="form-label"></label>
+                                <select asp-for="GymId" class="form-select">
+                                    @if (gyms != null)
+                                    {
+                                        @foreach (var gym in gyms)
+                                        {
+                                            <option value="@gym.Id" selected="@(Model.GymId == gym.Id)">@gym.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="GymId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ImageUrl" class="form-label"></label>
+                                <input asp-for="ImageUrl" class="form-control" />
+                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Verdiği Hizmetler</label>
+                            <div class="row">
+                                @if (services != null)
+                                {
+                                    @foreach (var service in services)
+                                    {
+                                        <div class="col-md-6 col-lg-4">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="selectedServices" value="@service.Id" 
+                                                       id="service_@service.Id"
+                                                       @(selectedServices.Contains(service.Id) ? "checked" : "") />
+                                                <label class="form-check-label" for="service_@service.Id">
+                                                    @service.Name
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="IsActive" class="form-check-input" />
+                                <label asp-for="IsActive" class="form-check-label"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Güncelle
+                            </button>
+                            <a asp-action="TrainerAvailability" asp-route-id="@Model.Id" class="btn btn-outline-info">
+                                <i class="bi bi-clock me-1"></i>Müsaitlik Saatleri
+                            </a>
+                            <a asp-action="Trainers" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg me-1"></i>İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
