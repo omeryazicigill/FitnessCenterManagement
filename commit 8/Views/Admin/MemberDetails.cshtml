@@ -1,0 +1,158 @@
+@model FitnessCenterManagement.Models.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "Üye Detayları";
+    var appointments = ViewBag.Appointments as List<FitnessCenterManagement.Models.Entities.Appointment>;
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-person me-2"></i>Üye Detayları</h1>
+                <p class="mb-0 opacity-75">@Model.FullName üyesinin bilgileri</p>
+            </div>
+            <a asp-action="Members" class="btn btn-light">
+                <i class="bi bi-arrow-left me-1"></i>Üyelere Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Üye Bilgileri -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body text-center p-4">
+                    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                    {
+                        <img src="@Model.ProfileImageUrl" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;" alt="@Model.FullName">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px;">
+                            <i class="bi bi-person fs-1 text-primary"></i>
+                        </div>
+                    }
+                    <h4 class="fw-bold mb-1">@Model.FullName</h4>
+                    <p class="text-muted mb-3">@Model.Email</p>
+                    
+                    <div class="d-grid gap-2">
+                        <form asp-action="DeleteMember" asp-route-id="@Model.Id" method="post"
+                              onsubmit="return confirm('Bu üyeyi silmek istediğinize emin misiniz?');">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-trash me-1"></i>Üyeyi Sil
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>Detaylı Bilgiler</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <small class="text-muted d-block">Telefon</small>
+                            <span>@(Model.PhoneNumber ?? "Belirtilmemiş")</span>
+                        </li>
+                        <li class="mb-3">
+                            <small class="text-muted d-block">Doğum Tarihi</small>
+                            <span>@(Model.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Belirtilmemiş")</span>
+                        </li>
+                        <li class="mb-3">
+                            <small class="text-muted d-block">Boy</small>
+                            <span>@(Model.Height.HasValue ? $"{Model.Height} cm" : "Belirtilmemiş")</span>
+                        </li>
+                        <li class="mb-3">
+                            <small class="text-muted d-block">Kilo</small>
+                            <span>@(Model.Weight.HasValue ? $"{Model.Weight} kg" : "Belirtilmemiş")</span>
+                        </li>
+                        <li>
+                            <small class="text-muted d-block">Kayıt Tarihi</small>
+                            <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Randevu Geçmişi -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-check me-2"></i>Randevu Geçmişi</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (appointments != null && appointments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Saat</th>
+                                        <th>Hizmet</th>
+                                        <th>Antrenör</th>
+                                        <th>Ücret</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in appointments)
+                                    {
+                                        <tr>
+                                            <td>@appointment.AppointmentDate.ToString("dd/MM/yyyy")</td>
+                                            <td>@appointment.StartTime.ToString(@"hh\:mm")</td>
+                                            <td>@appointment.Service?.Name</td>
+                                            <td>@appointment.Trainer?.FullName</td>
+                                            <td>@appointment.Price.ToString("N0") ₺</td>
+                                            <td>
+                                                <span class="badge bg-@appointment.StatusColor">@appointment.StatusName</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3">Henüz randevu kaydı bulunmamaktadır</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- İstatistikler -->
+            @if (appointments != null && appointments.Any())
+            {
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm text-center py-3">
+                            <h3 class="fw-bold text-primary mb-0">@appointments.Count</h3>
+                            <small class="text-muted">Toplam Randevu</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm text-center py-3">
+                            <h3 class="fw-bold text-success mb-0">@appointments.Count(a => a.Status == FitnessCenterManagement.Models.Entities.AppointmentStatus.Completed)</h3>
+                            <small class="text-muted">Tamamlanan</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm text-center py-3">
+                            <h3 class="fw-bold text-info mb-0">@appointments.Where(a => a.Status == FitnessCenterManagement.Models.Entities.AppointmentStatus.Completed).Sum(a => a.Price).ToString("N0") ₺</h3>
+                            <small class="text-muted">Toplam Harcama</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,130 @@
+@model FitnessCenterManagement.Models.Entities.Trainer
+@{
+    ViewData["Title"] = "Antrenör Müsaitlik Saatleri";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-clock me-2"></i>Müsaitlik Saatleri</h1>
+                <p class="mb-0 opacity-75">@Model.FullName antrenörünün çalışma saatleri</p>
+            </div>
+            <a asp-action="EditTrainer" asp-route-id="@Model.Id" class="btn btn-light">
+                <i class="bi bi-arrow-left me-1"></i>Antrenöre Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Yeni Müsaitlik Ekle</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddAvailability" method="post">
+                        <input type="hidden" name="trainerId" value="@Model.Id" />
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Gün</label>
+                            <select name="dayOfWeek" class="form-select" required>
+                                <option value="">-- Gün Seçin --</option>
+                                <option value="1">Pazartesi</option>
+                                <option value="2">Salı</option>
+                                <option value="3">Çarşamba</option>
+                                <option value="4">Perşembe</option>
+                                <option value="5">Cuma</option>
+                                <option value="6">Cumartesi</option>
+                                <option value="0">Pazar</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Başlangıç Saati</label>
+                                <input type="time" name="startTime" class="form-control" value="09:00" required />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Bitiş Saati</label>
+                                <input type="time" name="endTime" class="form-control" value="17:00" required />
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg me-1"></i>Müsaitlik Ekle
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-week me-2"></i>Mevcut Müsaitlik Saatleri</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Availabilities != null && Model.Availabilities.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Gün</th>
+                                        <th>Başlangıç</th>
+                                        <th>Bitiş</th>
+                                        <th>Durum</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var availability in Model.Availabilities.OrderBy(a => a.DayOfWeek))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@availability.DayName</strong>
+                                            </td>
+                                            <td>@availability.StartTime.ToString(@"hh\:mm")</td>
+                                            <td>@availability.EndTime.ToString(@"hh\:mm")</td>
+                                            <td>
+                                                @if (availability.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Aktif</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Pasif</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <form asp-action="DeleteAvailability" method="post" class="d-inline"
+                                                      onsubmit="return confirm('Bu müsaitlik saatini silmek istediğinize emin misiniz?');">
+                                                    <input type="hidden" name="id" value="@availability.Id" />
+                                                    <input type="hidden" name="trainerId" value="@Model.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3">Henüz müsaitlik saati eklenmemiş</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

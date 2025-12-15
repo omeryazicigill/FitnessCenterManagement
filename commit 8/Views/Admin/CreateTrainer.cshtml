@@ -1,0 +1,131 @@
+@model FitnessCenterManagement.Models.Entities.Trainer
+@{
+    ViewData["Title"] = "Yeni Antrenör";
+    var gyms = ViewBag.Gyms as List<FitnessCenterManagement.Models.Entities.Gym>;
+    var services = ViewBag.Services as List<FitnessCenterManagement.Models.Entities.Service>;
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-person-plus me-2"></i>Yeni Antrenör Ekle</h1>
+        <p class="mb-0 opacity-75">Sisteme yeni antrenör ekleyin</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="CreateTrainer" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GymId" class="form-label"></label>
+                                <select asp-for="GymId" class="form-select">
+                                    <option value="">Seçiniz</option>
+                                    @if (gyms != null)
+                                    {
+                                        @foreach (var gym in gyms)
+                                        {
+                                            <option value="@gym.Id">@gym.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="GymId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExperienceYears" class="form-label"></label>
+                                <input asp-for="ExperienceYears" class="form-control" type="number" />
+                                <span asp-validation-for="ExperienceYears" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Specializations" class="form-label"></label>
+                            <input asp-for="Specializations" class="form-control" placeholder="Örn: Fitness, Yoga, Pilates" />
+                            <span asp-validation-for="Specializations" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Verebileceği Hizmetler</label>
+                            <div class="row">
+                                @if (services != null)
+                                {
+                                    @foreach (var service in services)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="selectedServices" value="@service.Id" id="service_@service.Id">
+                                                <label class="form-check-label" for="service_@service.Id">@service.Name</label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Biography" class="form-label"></label>
+                            <textarea asp-for="Biography" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Biography" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label"></label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                            <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input asp-for="IsActive" class="form-check-input" checked />
+                            <label asp-for="IsActive" class="form-check-label"></label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Trainers" class="btn btn-outline-secondary">İptal</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+

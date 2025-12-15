@@ -1,0 +1,159 @@
+@model FitnessCenterManagement.Models.Entities.Appointment
+@{
+    ViewData["Title"] = "Randevu Detayları";
+}
+
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-calendar-check me-2"></i>Randevu Detayları</h1>
+                <p class="mb-0 opacity-75">Randevu #@Model.Id</p>
+            </div>
+            <a asp-action="Index" class="btn btn-light">
+                <i class="bi bi-arrow-left me-1"></i>Randevulara Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <!-- Durum Badge -->
+                    <div class="text-center mb-4">
+                        <span class="badge bg-@Model.StatusColor fs-6 px-4 py-2">
+                            @Model.StatusName
+                        </span>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Sol Kolon -->
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 bg-light rounded-3 h-100">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-calendar3 me-2"></i>Randevu Bilgileri
+                                </h6>
+                                <p class="mb-2">
+                                    <strong>Tarih:</strong><br>
+                                    <span class="fs-5">@Model.AppointmentDate.ToString("dd MMMM yyyy, dddd")</span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Saat:</strong><br>
+                                    <span class="fs-5">@Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Sağ Kolon -->
+                        <div class="col-md-6 mb-4">
+                            <div class="p-3 bg-light rounded-3 h-100">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-currency-lira me-2"></i>Ücret Bilgisi
+                                </h6>
+                                <p class="mb-0">
+                                    <span class="display-6 fw-bold text-primary">@Model.Price.ToString("N0") ₺</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hizmet Bilgisi -->
+                    @if (Model.Service != null)
+                    {
+                        <div class="p-3 bg-light rounded-3 mb-4">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-grid me-2"></i>Hizmet
+                            </h6>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                    <i class="bi bi-activity fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">@Model.Service.Name</h5>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>@Model.Service.DurationMinutes dakika
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    <!-- Antrenör Bilgisi -->
+                    @if (Model.Trainer != null)
+                    {
+                        <div class="p-3 bg-light rounded-3 mb-4">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-person-badge me-2"></i>Antrenör
+                            </h6>
+                            <div class="d-flex align-items-center">
+                                @if (!string.IsNullOrEmpty(Model.Trainer.ImageUrl))
+                                {
+                                    <img src="@Model.Trainer.ImageUrl" class="rounded-circle me-3" width="60" height="60" style="object-fit: cover;" alt="@Model.Trainer.FullName">
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                        <i class="bi bi-person fs-4 text-success"></i>
+                                    </div>
+                                }
+                                <div>
+                                    <h5 class="mb-1">@Model.Trainer.FullName</h5>
+                                    <small class="text-muted">@Model.Trainer.Specializations</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    <!-- Notlar -->
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="p-3 bg-light rounded-3 mb-4">
+                            <h6 class="text-muted mb-2">
+                                <i class="bi bi-sticky me-2"></i>Notlar
+                            </h6>
+                            <p class="mb-0">@Model.Notes</p>
+                        </div>
+                    }
+                    
+                    <!-- Tarih Bilgileri -->
+                    <div class="row text-muted small">
+                        <div class="col-6">
+                            <i class="bi bi-clock-history me-1"></i>
+                            Oluşturulma: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <div class="col-6 text-end">
+                                <i class="bi bi-pencil me-1"></i>
+                                Güncelleme: @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        }
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Aksiyonlar -->
+                    <div class="d-flex gap-2 justify-content-center">
+                        @if (Model.Status == FitnessCenterManagement.Models.Entities.AppointmentStatus.Pending || 
+                             Model.Status == FitnessCenterManagement.Models.Entities.AppointmentStatus.Approved)
+                        {
+                            <form asp-action="Cancel" asp-route-id="@Model.Id" method="post"
+                                  onsubmit="return confirm('Bu randevuyu iptal etmek istediğinize emin misiniz?');">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Randevuyu İptal Et
+                                </button>
+                            </form>
+                        }
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Geri Dön
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
