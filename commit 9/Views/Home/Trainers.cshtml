@@ -1,0 +1,98 @@
+@model List<FitnessCenterManagement.Models.Entities.Trainer>
+@{
+    ViewData["Title"] = "Antrenorlerimiz";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-people-fill me-2"></i>Antrenorlerimiz</h1>
+        <p class="mb-0 opacity-75">Deneyimli ve sertifikali profesyonel ekibimiz</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        @foreach (var trainer in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            @if (!string.IsNullOrEmpty(trainer.ImageUrl))
+                            {
+                                <img src="@trainer.ImageUrl" class="rounded-circle" width="150" height="150" style="object-fit: cover;" alt="@trainer.FullName">
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                    <i class="bi bi-person display-1 text-primary"></i>
+                                </div>
+                            }
+                        </div>
+                        <h5 class="fw-bold mb-1">@trainer.FullName</h5>
+                        <p class="text-primary small mb-2">@trainer.Specializations</p>
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark me-1">
+                                <i class="bi bi-award me-1"></i>@trainer.ExperienceYears yil deneyim
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            @if (trainer.Biography != null && trainer.Biography.Length > 100)
+                            {
+                                @(trainer.Biography.Substring(0, 100) + "...")
+                            }
+                            else
+                            {
+                                @trainer.Biography
+                            }
+                        </p>
+                        
+                        @if (trainer.TrainerServices.Any())
+                        {
+                            <div class="mb-3">
+                                @foreach (var ts in trainer.TrainerServices.Take(3))
+                                {
+                                    <span class="badge bg-primary bg-opacity-10 text-primary me-1 mb-1">@ts.Service?.Name</span>
+                                }
+                            </div>
+                        }
+                        
+                        @{
+                            var activeAvailabilities = trainer.Availabilities?.Where(a => a.IsActive).OrderBy(a => a.DayOfWeek).ToList();
+                        }
+                        @if (activeAvailabilities != null && activeAvailabilities.Any())
+                        {
+                            <div class="mt-3 pt-3 border-top">
+                                <h6 class="fw-bold text-muted small mb-2">
+                                    <i class="bi bi-calendar-week me-1"></i>Çalışma Saatleri
+                                </h6>
+                                <div class="text-start small">
+                                    @foreach (var avail in activeAvailabilities)
+                                    {
+                                        <div class="d-flex justify-content-between py-1">
+                                            <span class="text-muted">@avail.DayName</span>
+                                            <span class="fw-semibold">@avail.StartTime.ToString(@"hh\:mm") - @avail.EndTime.ToString(@"hh\:mm")</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mt-3 pt-3 border-top">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>Çalışma saatleri henüz belirlenmedi
+                                </small>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-white border-0 p-4 pt-0">
+                        <a asp-controller="Home" asp-action="TrainerDetails" asp-route-id="@trainer.Id" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-person-lines-fill me-1"></i>Profili Goruntule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

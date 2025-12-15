@@ -1,0 +1,71 @@
+@model List<FitnessCenterManagement.Models.Entities.Service>
+@{
+    ViewData["Title"] = "Hizmetlerimiz";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-grid-fill me-2"></i>Hizmetlerimiz</h1>
+        <p class="mb-0 opacity-75">Sunduğumuz profesyonel spor ve fitness hizmetleri</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        @foreach (var service in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex p-3 mb-3">
+                            @{
+                                var icon = service.Category switch
+                                {
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.Fitness => "bi-activity",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.Yoga => "bi-peace",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.Pilates => "bi-person-arms-up",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.Cardio => "bi-heart-pulse",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.PersonalTraining => "bi-person-workspace",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.CrossFit => "bi-lightning",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.Boxing => "bi-hand-index-thumb",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.Swimming => "bi-water",
+                                    FitnessCenterManagement.Models.Entities.ServiceCategory.GroupClasses => "bi-people",
+                                    _ => "bi-star"
+                                };
+                            }
+                            <i class="bi @icon fs-4 text-primary"></i>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary mb-2">@service.Category</span>
+                        <h5 class="fw-bold">@service.Name</h5>
+                        <p class="text-muted mb-3">@service.Description</p>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div>
+                                <i class="bi bi-clock me-1 text-muted"></i>
+                                <span class="text-muted">@service.DurationMinutes dakika</span>
+                            </div>
+                            <span class="fw-bold text-primary fs-4">@service.Price.ToString("N0") ₺</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 p-4 pt-0">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-calendar-plus me-1"></i>Randevu Al
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Giriş Yap
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
