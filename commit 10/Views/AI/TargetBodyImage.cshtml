@@ -1,0 +1,146 @@
+@model FitnessCenterManagement.ViewModels.TargetBodyImageViewModel
+@{
+    ViewData["Title"] = "Hedef Görünüm";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-image me-2"></i>Hedef Görünüm</h1>
+        <p class="mb-0 opacity-75">Fotoğrafınızı yükleyin ve seçtiğiniz kas grubunu çalıştırdıktan sonra nasıl görüneceğinizi öğrenin</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <form asp-action="GetTargetBodyImage" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Fotoğraf Yükle</label>
+                            <div class="border rounded p-4 text-center bg-light" id="dropZone">
+                                <input type="file" asp-for="Image" id="imageInput" class="d-none" accept="image/*">
+                                <div id="uploadPlaceholder">
+                                    <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                                    <p class="mb-2">Fotoğraf yüklemek için tıklayın veya sürükleyin</p>
+                                    <small class="text-muted">JPEG, PNG veya GIF (max 5MB)</small>
+                                </div>
+                                <div id="imagePreview" class="d-none">
+                                    <img id="previewImg" src="" class="img-fluid rounded mb-2" style="max-height: 300px;">
+                                    <br>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="removeImage">
+                                        <i class="bi bi-x-lg me-1"></i>Kaldır
+                                    </button>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Image" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="MuscleGroup" class="form-label fw-bold">Hedef Kas Grubu Seçin</label>
+                            <select asp-for="MuscleGroup" class="form-select form-select-lg">
+                                <option value="">-- Kas Grubu Seçin --</option>
+                                <option value="Üst Gövde">Üst Gövde (Göğüs, Omuz, Sırt, Kollar, Karın)</option>
+                                <option value="Alt Gövde">Alt Gövde (Kalça, Uyluk, Bacak, Baldır)</option>
+                                <option value="Göğüs">Göğüs (Pektoral Kaslar)</option>
+                                <option value="Sırt">Sırt (Lat, Rhomboid, Trapez)</option>
+                                <option value="Omuz">Omuz (Deltoid Kasları)</option>
+                                <option value="Kollar">Kollar (Biceps ve Triceps)</option>
+                                <option value="Karın">Karın (Abdominal Kaslar)</option>
+                                <option value="Bacaklar">Bacaklar (Quadriceps, Hamstring, Baldır)</option>
+                                <option value="Kalça">Kalça (Gluteal Kaslar)</option>
+                            </select>
+                            <span asp-validation-for="MuscleGroup" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-magic me-2"></i>Hedef Görünümü Göster
+                            </button>
+                            <a asp-action="Recommendation" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(Model.TargetBodyResult))
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-warning text-dark py-3">
+                        <h5 class="mb-0"><i class="bi bi-star-fill me-2"></i>Hedef Görünüm Analizi</h5>
+                    </div>
+                    <div class="card-body">
+                        @Html.Raw(Model.TargetBodyResult)
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            var dropZone = $('#dropZone');
+            var imageInput = $('#imageInput');
+            var uploadPlaceholder = $('#uploadPlaceholder');
+            var imagePreview = $('#imagePreview');
+            var previewImg = $('#previewImg');
+            
+            // Click to upload
+            dropZone.click(function() {
+                imageInput.click();
+            });
+            
+            // File selected
+            imageInput.change(function() {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.attr('src', e.target.result);
+                        uploadPlaceholder.addClass('d-none');
+                        imagePreview.removeClass('d-none');
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Remove image
+            $('#removeImage').click(function(e) {
+                e.stopPropagation();
+                imageInput.val('');
+                imagePreview.addClass('d-none');
+                uploadPlaceholder.removeClass('d-none');
+            });
+            
+            // Drag and drop
+            dropZone.on('dragover', function(e) {
+                e.preventDefault();
+                dropZone.addClass('border-primary');
+            });
+            
+            dropZone.on('dragleave', function(e) {
+                e.preventDefault();
+                dropZone.removeClass('border-primary');
+            });
+            
+            dropZone.on('drop', function(e) {
+                e.preventDefault();
+                dropZone.removeClass('border-primary');
+                
+                var files = e.originalEvent.dataTransfer.files;
+                if (files.length > 0) {
+                    imageInput[0].files = files;
+                    imageInput.trigger('change');
+                }
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,130 @@
+@model FitnessCenterManagement.ViewModels.ImageAnalysisViewModel
+@{
+    ViewData["Title"] = "Görsel Analiz";
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-camera me-2"></i>Görsel Analiz</h1>
+        <p class="mb-0 opacity-75">Fotoğraf yükleyerek AI destekli vücut analizi yaptırın</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <form asp-action="AnalyzeImage" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Fotoğraf Yükle</label>
+                            <div class="border rounded p-4 text-center bg-light" id="dropZone">
+                                <input type="file" name="Image" id="imageInput" class="d-none" accept="image/*">
+                                <div id="uploadPlaceholder">
+                                    <i class="bi bi-cloud-upload display-4 text-muted"></i>
+                                    <p class="mb-2">Fotoğraf yüklemek için tıklayın veya sürükleyin</p>
+                                    <small class="text-muted">JPEG, PNG veya GIF (max 5MB)</small>
+                                </div>
+                                <div id="imagePreview" class="d-none">
+                                    <img id="previewImg" src="" class="img-fluid rounded mb-2" style="max-height: 300px;">
+                                    <br>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="removeImage">
+                                        <i class="bi bi-x-lg me-1"></i>Kaldır
+                                    </button>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Image" class="text-danger small"></span>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-search me-2"></i>Analiz Et
+                            </button>
+                            <a asp-action="Recommendation" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Geri Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(Model.AnalysisResult))
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-info text-white py-3">
+                        <h5 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Analiz Sonuçları</h5>
+                    </div>
+                    <div class="card-body">
+                        @Html.Raw(Model.AnalysisResult)
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var dropZone = $('#dropZone');
+            var imageInput = $('#imageInput');
+            var uploadPlaceholder = $('#uploadPlaceholder');
+            var imagePreview = $('#imagePreview');
+            var previewImg = $('#previewImg');
+            
+            // Click to upload
+            dropZone.click(function() {
+                imageInput.click();
+            });
+            
+            // File selected
+            imageInput.change(function() {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.attr('src', e.target.result);
+                        uploadPlaceholder.addClass('d-none');
+                        imagePreview.removeClass('d-none');
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Remove image
+            $('#removeImage').click(function(e) {
+                e.stopPropagation();
+                imageInput.val('');
+                imagePreview.addClass('d-none');
+                uploadPlaceholder.removeClass('d-none');
+            });
+            
+            // Drag and drop
+            dropZone.on('dragover', function(e) {
+                e.preventDefault();
+                dropZone.addClass('border-primary');
+            });
+            
+            dropZone.on('dragleave', function(e) {
+                e.preventDefault();
+                dropZone.removeClass('border-primary');
+            });
+            
+            dropZone.on('drop', function(e) {
+                e.preventDefault();
+                dropZone.removeClass('border-primary');
+                
+                var files = e.originalEvent.dataTransfer.files;
+                if (files.length > 0) {
+                    imageInput[0].files = files;
+                    imageInput.trigger('change');
+                }
+            });
+        });
+    </script>
+}
+
+
+
+
